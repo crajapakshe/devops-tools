@@ -1,0 +1,46 @@
+---
+name: Crete Storybook preview per PR
+on:
+  pull_request:
+    types:
+      - opened
+  issue_comment:
+    types:
+      - created
+
+jobs:
+  build_and_preview:
+    if: |
+      github.event.pull_request.head.repo.full_name == github.repository || contains(github.event.comment.body, 'test')
+    runs-on: ubuntu-latest
+
+    env:
+      NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v5.4
+
+      - name: Checking out to ${{ steps.branch-name.outputs.current_branch }}
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ steps.branch-name.outputs.current_branch }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build Storybook
+        run: yarn storybook:build
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SLANG_AUTH }}'
+          projectId: slang-auth
+          channelId: storybook-preview
