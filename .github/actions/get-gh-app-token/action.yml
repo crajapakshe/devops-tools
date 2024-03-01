@@ -1,0 +1,28 @@
+# action.yml
+name: "Get Token"
+description: "Get a token for a GH app installation"
+inputs:
+  pem:
+    description: "App Private Key (Base64)"
+    required: true
+    default: ""
+  app_id:
+    description: "App ID"
+    required: true
+    default: ""
+  install_id:
+    description: "Installation ID"
+    required: true
+    default: ""
+outputs:
+  app_token: # id of output
+    description: "The Installation Token to use with the GitHub REST API"
+  jwt: # id of output
+    description: "The App Token. Useful to get the Installation Token"
+runs:
+  using: "docker"
+  image: "Dockerfile"
+  env:
+    GH_APP_WRITE_PEM: ${{ inputs.pem }}
+    GH_APP_WRITE_ID: ${{ inputs.app_id }}
+    GH_APP_INSTALLATION_ID: ${{ inputs.install_id }}

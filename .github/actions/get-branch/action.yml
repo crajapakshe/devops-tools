@@ -1,0 +1,13 @@
+name: "Get Branch"
+description: "Get the currently active git branch"
+outputs:
+  branch:
+    description: "Branch Name"
+    value: ${{ steps.extract_branch.outputs.branch }}
+runs:
+  using: "composite"
+  steps:
+    - name: "Get Branch"
+      shell: bash
+      id: extract_branch
+      run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
