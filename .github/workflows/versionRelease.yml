@@ -2,11 +2,22 @@ name: "Version Releases"
 run-name: "Version Releases v${{ inputs.version }}"
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       version:
         description: "Version to be published (#.#.#)"
+        type: string
         required: true
+      version_script:
+        description: "Command to run to record the version details eg. npm run version:changelog, node scripts/version-changelog.js"
+        type: string
+        required: true
+    # secrets:
+    #   GH_APP_WRITE_PEM:
+    #     required: true
+    #   GH_APP_WRITE_ID:
+    #     required: true
+    #   GH_APP_INSTALLATION_ID:
 
 jobs:
   version_release:
