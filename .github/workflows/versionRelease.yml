@@ -12,7 +12,9 @@ on:
         description: "Command to run to record the version details eg. npm run version:changelog, node scripts/version-changelog.js"
         type: string
         required: true
-    # secrets:
+    secrets:
+      DEVOPS_PAT:
+        required: true
     #   GH_APP_WRITE_PEM:
     #     required: true
     #   GH_APP_WRITE_ID:
