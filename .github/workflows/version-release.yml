@@ -102,6 +102,6 @@ jobs:
         env:
           #GITHUB_TOKEN: ${{ steps.app_token.outputs.app_token }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release create v${{ inputs.version }} --generate-notes
+        run: gh release create v${{ inputs.version }} -F RELEASE-NOTES.md
 
         
