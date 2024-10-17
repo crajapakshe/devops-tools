@@ -1,5 +1,5 @@
 name: "Version Releases"
-run-name: "Version Releases v${{ inputs.version }}"
+run-name: "Version Releases v${{ inputs.version }} by ${{ github.actor }}"
 
 on:
   workflow_call:
