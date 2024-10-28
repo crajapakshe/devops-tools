@@ -11,4 +11,4 @@ currently being supported with security updates.
 
 ## Reporting a Vulnerability
 
-If you notice any vulnerabilities with this code or container, please report it to me via a github issue. Any help provided will allow for a secure helloworld container to new users, and also will be happy to add your github handle as a contributor to the project.
+If you notice any vulnerabilities with this code or container, please report it to me via a github issue.
