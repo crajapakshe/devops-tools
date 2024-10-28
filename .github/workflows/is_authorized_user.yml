@@ -1,0 +1,13 @@
+name: "Is Authorized User"
+
+on:
+  workflow_call:
+
+jobs:
+  is_authorized_user:
+    name: Check Is Authorized User
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'crajapakshe' }}
+    steps:
+      - run: |
+          echo "Authorized"

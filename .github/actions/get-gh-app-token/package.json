@@ -1,0 +1,20 @@
+{
+  "name": "get-gh-app-token",
+  "version": "1.0.0",
+  "description": "",
+  "main": "generate-gh-token.js",
+  "scripts": {
+    "getJwt": "docker compose up --build get-jwt",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@actions/core": "^v1.10.0",
+    "@actions/http-client": "v2.0.1",
+    "jsonwebtoken": "^9.0.0",
+    "node-fetch": "^3.2.10"
+  }
+}

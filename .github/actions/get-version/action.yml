@@ -1,0 +1,20 @@
+name: "Get Version"
+description: "Get the currently active version (git tag)"
+inputs:
+  fallback:
+    description: "Default (or fallback) value if none is found"
+    required: false
+    default: ""
+outputs:
+  version:
+    description: "Version"
+    value: ${{ steps.get_version.outputs.version }}
+runs:
+  using: "composite"
+  steps:
+    - name: "Get Version"
+      shell: bash
+      id: get_version
+      run: |
+        [[ ! "${{ github.event.ref }}" =~ refs/tags ]] && echo "version=${{ inputs.fallback }}" >> $GITHUB_OUTPUT && exit
+        echo "version=${{ github.ref_name }}" >> $GITHUB_OUTPUT

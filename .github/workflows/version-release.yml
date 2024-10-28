@@ -1,0 +1,107 @@
+name: "Version Releases"
+run-name: "Version Releases v${{ inputs.version }} by ${{ github.actor }}"
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "Version to be published (#.#.#)"
+        type: string
+        required: true
+      version_script:
+        description: "Command to run to record the version details eg. npm run version:changelog, node scripts/version-changelog.js"
+        type: string
+        required: true
+    secrets:
+      DEVOPS_PAT:
+        required: true
+    #   GH_APP_WRITE_PEM:
+    #     required: true
+    #   GH_APP_WRITE_ID:
+    #     required: true
+    #   GH_APP_INSTALLATION_ID:
+
+jobs:
+  version_release:
+    name: "Version Releases"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs: 
+      version: ${{ steps.get_version.outputs.version }}
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      # # Required GH pro sunscription
+      # - name: Get App Token
+      #   id: app_token
+      #   uses: crajapakshe/devops-tools/.github/actions/get-gh-app-token@main
+      #   with:
+      #     pem: ${{ secrets.GH_APP_WRITE_PEM }}
+      #     app_id: ${{ secrets.GH_APP_WRITE_ID }}
+      #     install_id: ${{ secrets.GH_APP_INSTALLATION_ID }}
+
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # with:
+        #   token: ${{ steps.app_token.outputs.app_token }}
+
+      - name: Extract branch name
+        id: extract_branch
+        uses: crajapakshe/devops-tools/.github/actions/get-branch@main
+
+      - name: Configure CI Git User
+        run: |
+          git config --global user.name '@system-admin'
+          git config --global user.email 'system-admin@users.noreply.github.com'
+
+      - name: Prefix version 
+        id: "get_version"
+        run: |
+          echo "version=v${{inputs.version}}" >> $GITHUB_OUTPUT
+
+      - name: Run version changelog
+        run: |
+          node scripts/version-changelog.js ${{ steps.get_version.outputs.version }}
+          
+      - name: Create Release Branch
+        run: git checkout -b release/${{ steps.get_version.outputs.version }}
+
+      - name: Commit Changes (CHANGELOG.md, etc..)
+        run: git commit -am ${{ steps.get_version.outputs.version }}
+
+      - name: Create Tag
+        run: git tag ${{ steps.get_version.outputs.version }}
+
+      - name: Push Tag
+        run: git push --force origin ${{ steps.get_version.outputs.version }}
+
+      - name: Push Release Branch
+        run: git push --force origin release/${{ steps.get_version.outputs.version }}
+
+      - name: Open PR
+        env:
+          #GITHUB_TOKEN: ${{ steps.app_token.outputs.app_token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: PR_URL="$(gh pr create --base main --fill --title "Release - ${{ steps.get_version.outputs.version }}")"
+
+      - name: Approve PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.DEVOPS_PAT }}
+        run: gh pr review $PR_URL --approve
+
+      - name: Merge PR
+        env:
+          #GITHUB_TOKEN: ${{ steps.app_token.outputs.app_token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr merge $PR_URL --squash --auto --delete-branch
+
+      - name: Release v${{ inputs.version }}
+        env:
+          #GITHUB_TOKEN: ${{ steps.app_token.outputs.app_token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create v${{ inputs.version }} -F RELEASE-NOTES.md
+
+        

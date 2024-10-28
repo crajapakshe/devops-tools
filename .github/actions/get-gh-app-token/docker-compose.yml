@@ -1,0 +1,6 @@
+version: "3.9"
+services:
+  get-jwt:
+    build: .
+    env_file:
+      - ./envs/.env
