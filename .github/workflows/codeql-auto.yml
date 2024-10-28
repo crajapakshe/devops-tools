@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Get languages from repo
         id: set-matrix
-        uses: "crajapakshe/devops-tools/.github/actions/set-language-matrix@main"
+        uses: crajapakshe/devops-tools/.github/actions/set-language-matrix@main
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
           endpoint: ${{ github.event.repository.languages_url }}
